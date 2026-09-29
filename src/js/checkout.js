@@ -5,6 +5,7 @@ loadHeaderFooter();
 
 const checkout = new CheckoutProcess("so-cart", ".order-summary");
 checkout.init();
+checkout.calculateOrderTotal(); // Automatically calculate totals on page load
 
 const form = document.querySelector("#checkout-form");
 const submitButton = document.querySelector("#checkoutSubmit");

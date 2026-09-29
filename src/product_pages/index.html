@@ -1,25 +1,18 @@
 <!doctype html>
-
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
     <title>Sleep Outside | Marmot Ajax 3 person tent</title>
-
     <link rel="stylesheet" href="../css/style.css" />
-
     <script src="../js/product.js" type="module"></script>
   </head>
-
   <body>
     <header class="divider" id="main-header"></header>
 
     <main class="divider">
       <section class="product-detail">
         <h3>Marmot</h3>
-
         <h2 class="divider">Ajax Tent - 3-Person, 3-Season</h2>
 
         <img
@@ -29,7 +22,6 @@
         />
 
         <p class="product-card__price">$199.99</p>
-
         <p class="product__color">Pale Pumpkin/Terracotta</p>
 
         <p class="product__description">
@@ -41,6 +33,25 @@
         <div class="product-detail__add">
           <button id="addToCart" data-id="880RR">Add to Cart</button>
         </div>
+      </section>
+
+      <!-- Customer Comments Section -->
+      <section class="product-comments">
+        <h3>Customer Comments</h3>
+        <div id="comments-container">
+          <!-- Comments will load dynamically here -->
+        </div>
+
+        <form id="comment-form">
+          <h4>Leave a Comment</h4>
+          <label for="userName">Name:</label>
+          <input type="text" id="userName" required />
+
+          <label for="userComment">Comment:</label>
+          <textarea id="userComment" rows="3" required></textarea>
+
+          <button type="submit" id="submitComment">Post Comment</button>
+        </form>
       </section>
     </main>
 
