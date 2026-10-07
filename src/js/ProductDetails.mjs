@@ -1,5 +1,5 @@
 import { alertMessage, getLocalStorage, setLocalStorage } from "./utils.mjs";
-import { setupCommentSubmission } from "./comments.mjs"; // Import your comments module
+import { setupCommentSubmission } from "./comments.mjs";
 
 function animateCartIcon() {
   const cart = document.querySelector(".cart");
@@ -21,30 +21,106 @@ export default class ProductDetails {
     this.productId = productId;
     this.product = {};
     this.dataSource = dataSource;
+    this.selectedColor = null;
   }
 
   async init() {
     this.product = await this.dataSource.findProductById(this.productId);
+    
+    if (this.product.Colors && this.product.Colors.length > 0) {
+      this.selectedColor = this.product.Colors[0].ColorName;
+    }
+
     this.renderProductDetails();
+
+    if (this.product.Colors && this.product.Colors.length > 1) {
+      const colorOptions = document.querySelectorAll(".color-swatch-option");
+      colorOptions.forEach((option) => {
+        option.addEventListener("click", () => {
+          colorOptions.forEach((opt) => opt.style.borderColor = "#ccc");
+          option.style.borderColor = "#525b0f";
+          this.selectedColor = option.dataset.colorName;
+          
+          const colorNameSpan = document.querySelector(".selected-color-name");
+          if (colorNameSpan) {
+            colorNameSpan.textContent = this.selectedColor;
+          }
+        });
+      });
+    }
 
     document
       .getElementById("addToCart")
       .addEventListener("click", this.addProductToCart.bind(this));
 
-    // Initialize the comments section after the product details render
+    document
+      .getElementById("addToWishlist")
+      .addEventListener("click", this.addProductToWishlist.bind(this));
+
     setupCommentSubmission(this.productId);
   }
 
   addProductToCart() {
+    const token = getLocalStorage("so-token");
+    if (!token) {
+      alertMessage("Please log in or register to add items to your cart.", true);
+      setTimeout(() => {
+        window.location.href = "../login/index.html";
+      }, 1500);
+      return;
+    }
+
     const cartItems = getLocalStorage("so-cart") || [];
-    cartItems.push(this.product);
+    
+    const productWithColor = {
+      ...this.product,
+      selectedColor: this.selectedColor || (this.product.Colors ? this.product.Colors[0].ColorName : "Default")
+    };
+
+    cartItems.push(productWithColor);
     setLocalStorage("so-cart", cartItems);
     alertMessage("Product added to your cart.", false);
     animateCartIcon();
   }
 
+  addProductToWishlist() {
+    const wishlistItems = getLocalStorage("wishlist") || []; 
+    const exists = wishlistItems.some((item) => item.Id === this.product.Id);
+    
+    if (!exists) {
+      wishlistItems.push(this.product);
+      setLocalStorage("wishlist", wishlistItems); 
+      alertMessage("Product added to your wish list! ❤️", false);
+    } else {
+      alertMessage("This item is already in your wish list.", true);
+    }
+  }
+
   renderProductDetails() {
     const detailElement = document.querySelector(".product-detail");
+
+    let colorsHtml = "";
+    if (this.product.Colors && this.product.Colors.length > 0) {
+      if (this.product.Colors.length > 1) {
+        const swatchesHTML = this.product.Colors.map((color, index) => {
+          const borderColor = index === 0 ? "#525b0f" : "#ccc";
+          const swatchImg = color.ColorImage || this.product.Images.PrimarySmall;
+          return `<div class="color-swatch-option" data-color-name="${color.ColorName}" style="cursor: pointer; border: 2px solid ${borderColor}; border-radius: 4px; padding: 3px; display: inline-block;" title="${color.ColorName}"><img src="${swatchImg}" alt="${color.ColorName}" style="width: 35px; height: 35px; object-fit: cover; border-radius: 2px; display: block;" /></div>`;
+        }).join("");
+
+        colorsHtml = `
+          <div class="product-colors-selection" style="margin: 15px 0;">
+            <p style="font-weight: 600; margin-bottom: 8px;">Color: <span class="selected-color-name" style="font-weight: normal;">${this.selectedColor}</span></p>
+            <div style="display: flex; gap: 10px;">
+              ${swatchesHTML}
+            </div>
+          </div>
+        `;
+      } else {
+        colorsHtml = `<p class="product__color">Color: ${this.product.Colors[0].ColorName}</p>`;
+      }
+    }
+
     detailElement.innerHTML = `
       <h3>${this.product.Brand.Name}</h3>
       <h2 class="divider">${this.product.NameWithoutBrand}</h2>
@@ -66,7 +142,7 @@ export default class ProductDetails {
       </picture>
 
       <p class="product-card__price">$${this.product.FinalPrice}</p>
-      <p class="product__color">${this.product.Colors[0].ColorName}</p>
+      ${colorsHtml}
       <p class="product__description">
         ${this.product.DescriptionHtmlSimple}
       </p>
@@ -75,8 +151,11 @@ export default class ProductDetails {
         Add to Cart
       </button>
 
-      <!-- Customer Comments Section injected dynamically so it doesn't get wiped out -->
-      <section class="product-comments">
+      <button id="addToWishlist" style="background-color: #333; margin-top: 10px;" data-id="${this.product.Id}">
+        Add to Wish List ❤️
+      </button>
+
+      <section class="product-comments" style="margin-top: 30px;">
         <h3>Customer Comments</h3>
         <div id="comments-container"></div>
 

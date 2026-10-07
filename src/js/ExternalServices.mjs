@@ -63,4 +63,15 @@ export default class ExternalServices {
     const response = await fetch(`${baseURL}orders`, options);
     return convertToJson(response);
   }
+
+  async registerUser(userData) {
+    const options = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(userData),
+    };
+
+    const response = await fetch(`${baseURL}users`, options);
+    return convertToJson(response);
+  }
 }

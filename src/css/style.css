@@ -146,52 +146,57 @@ button:disabled {
 
 /* End utility classes */
 
-/* Cart icon styles */
+/* --- Cart Icon & Animation Styles --- */
 .cart {
-  padding-top: 1em;
   position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 0.5em;
   text-align: center;
 }
 
-.cart svg {
-  width: 25px;
-  transform-origin: center;
+.cart svg,
+.cart img {
+  width: 32px;
+  height: 32px;
+  transform-origin: center bottom;
+  transition: filter 0.2s ease;
 }
 
-.cart:hover svg {
-  fill: gray;
+.cart:hover svg,
+.cart:hover img {
+  filter: brightness(0.8);
 }
 
-.cart--updated svg {
+/* Direct class targeting for reliable animation playback */
+.cart.cart--updated svg,
+.cart.cart--updated img {
   animation: cart-bounce 0.7s ease;
-  fill: var(--tertiary-color);
 }
 
 @keyframes cart-bounce {
   0%,
   100% {
-    transform: translateY(0) rotate(0);
+    transform: translateY(0) rotate(0) scale(1);
   }
-
   25% {
-    transform: translateY(-10px) rotate(-12deg) scale(1.15);
+    transform: translateY(-8px) rotate(-12deg) scale(1.25);
   }
-
   50% {
-    transform: translateY(0) rotate(10deg) scale(1.1);
+    transform: translateY(0) rotate(10deg) scale(1.2);
   }
-
   75% {
-    transform: translateY(-4px) rotate(-5deg);
+    transform: translateY(-3px) rotate(-5deg) scale(1.1);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cart--updated svg {
+  .cart img.cart--updated,
+  .cart svg.cart--updated {
     animation: none;
   }
 }
-
 /* End cart icon styles */
 
 .search-form {
@@ -355,7 +360,6 @@ button:disabled {
   display: grid;
   grid-template-columns: 25% auto 15%;
   font-size: var(--small-font);
-  /* max-height: 120px; */
   align-items: center;
 }
 
@@ -552,7 +556,6 @@ footer {
 }
 
 /* Checkout submission feedback */
-
 #checkoutSubmit {
   transition: opacity 0.2s ease;
 }
@@ -594,8 +597,6 @@ footer {
     animation: none;
   }
 }
-
-/* End checkout submission feedback */
 
 /* Clean Cart */
 .cart-footer {
@@ -653,7 +654,6 @@ footer {
 .cart-remove:hover {
   opacity: 0.7;
 }
-
 
 /* --- Customer Comments Section Styling --- */
 .product-comments {
@@ -725,7 +725,7 @@ footer {
 }
 
 #submitComment {
-  background-color: #525b0f; /* Matches your site's button theme */
+  background-color: #525b0f;
   color: white;
   border: none;
   border-radius: 4px;
@@ -739,3 +739,52 @@ footer {
 #submitComment:hover {
   background-color: #3f450c;
 }
+
+/* --- Glowing Cart Icon Animation --- */
+.cart {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 0.5em;
+  text-align: center;
+}
+
+.cart svg,
+.cart img {
+  width: 32px;
+  height: 32px;
+  transition: all 0.3s ease;
+  transform-origin: center;
+}
+
+.cart:hover svg,
+.cart:hover img {
+  filter: brightness(0.8);
+}
+
+/* Striking Glow & Scale when updated */
+.cart.cart--updated svg,
+.cart.cart--updated img {
+  animation: glow-pulse 0.8s ease-in-out;
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 0px rgba(240, 168, 104, 0)) brightness(1);
+  }
+  50% {
+    transform: scale(1.35);
+    /* Creates a bright glowing aura and boosts brightness */
+    filter: drop-shadow(0 0 14px #f0a868) drop-shadow(0 0 25px #8a470c) brightness(1.4);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cart.cart--updated svg,
+  .cart.cart--updated img {
+    animation: none;
+  }
+}
+/* End cart icon styles */
